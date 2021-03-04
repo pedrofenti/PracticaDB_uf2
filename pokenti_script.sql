@@ -301,9 +301,9 @@ SELECT hp INTO @max_hp FROM stats WHERE id_pokenti=in_pokenti;
 SELECT curr_hp INTO @curr_hp FROM current_stats WHERE id_pokenti=in_pokenti;
 
 IF @curr_hp+in_heal>@max_hp THEN
-	UPDATE current_stats SET curr_hp=@curr_hp+in_heal WHERE id_pokenti=in_pokenti;
-ELSE
 	UPDATE current_stats SET curr_hp=@max_hp WHERE id_pokenti=in_pokenti;
+ELSE
+	UPDATE current_stats SET curr_hp=@curr_hp+in_heal WHERE id_pokenti=in_pokenti;
 END IF;
 
 END //
