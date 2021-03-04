@@ -233,27 +233,113 @@ CREATE TABLE current_stats (
 	FOREIGN KEY (id_pokenti) REFERENCES pokentis(id_pokenti) );
 
 INSERT INTO current_stats (curr_level, curr_exp, curr_hp, cur_attack, curr_defense, curr_sp_atk, curr_sp_def, curr_speed, id_pokenti) VALUES (
-	(5, 4, 4, 49, 65, 65, 45, 31, 1),
-	(20, 6, 6, 63, 80, 80, 60, 45, 2),
-	(50, 8, 82, 83, 100, 100, 80, 55, 3),
-	(6, 3, 52, 43, 60, 50, 65, 39, 4),
-	(23, 5, 64, 58, 80, 65, 80, 45, 5),
-	(40, 7, 84, 78, 109, 85, 100, 43, 6),
-	(2, 4, 48, 65, 50, 64, 43, 24, 7),
-	(17, 5, 63, 80, 65, 80, 58, 45, 8),
-	(36, 7, 83, 100, 85, 105, 78, 50, 9),
-	(9, 4, 30, 35, 20, 20, 45, 15, 10),
-	(15, 5, 20, 55, 25, 25, 30, 05, 11),
-	(28, 6, 45, 50, 90, 80, 70, 95, 12),
-	(4, 4, 35, 30, 20, 20, 50, 19, 13),
-	(12, 4, 25, 50, 25, 25, 35, 25, 14),
-	(30, 6, 90, 40, 45, 80, 75, 95, 15),
-	(6, 4, 45, 40, 35, 35, 56, 25, 16),
-	(25, 6, 60, 55, 50, 50, 71, 39, 17),
-	(70, 8, 80, 75, 70, 70, 101, 79, 18),
-	(1, 3, 56, 35, 25, 35, 72, 53, 19),
-	(35, 5, 81, 60, 50, 70, 97, 41, 20) );
+	(5, 34, 41, 42, 65, 15, 15, 31, 1),
+	(20, 26, 6, 43, 80, 8, 6, 45, 2),
+	(50, 8, 18, 56, 10, 10, 38, 55, 3),
+	(6, 13, 2, 32, 60, 35, 45, 39, 4),
+	(23, 75, 61, 18, 8, 15, 18, 45, 5),
+	(40, 47, 54, 48, 19, 18, 10, 43, 6),
+	(2, 42, 41, 35, 50, 6, 43, 24, 7),
+	(17, 51, 73, 20, 35, 10, 58, 14, 8),
+	(36, 7, 81, 60, 15, 15, 78, 20, 9),
+	(9, 41, 30, 31, 10, 20, 45, 15, 10),
+	(15, 45, 10, 45, 45, 25, 30, 5, 11),
+	(28, 76, 45, 40, 14, 30, 70, 45, 12),
+	(4, 43, 35, 20, 24, 20, 50, 19, 13),
+	(12, 14, 25, 12, 15, 2, 35, 45, 14),
+	(30, 86, 10, 14, 40, 40, 75, 15, 15),
+	(6, 42, 5, 40, 32, 32, 53, 25, 16),
+	(25, 6, 20, 55, 40, 40, 21, 39, 17),
+	(70, 18, 50, 75, 17, 14, 10, 79, 18),
+	(1, 34, 16, 35, 22, 25, 12, 53, 19),
+	(35, 51, 11, 60, 15, 40, 9, 41, 20) );
+
+CREATE TABLE catched (
+	id_catched INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	id_player INT UNSIGNED NOT NULL,
+	id_pokenti INT UNSIGNED NOT NULL,
+	FOREIGN KEY (id_player) REFERENCES players(id_player),
+	FOREIGN KEY (id_pokenti) REFERENCES pokentis(id_pokenti) );
+
+INSERT INTO catched (id_player, id_pokenti) VALUES (
+	(1, 11),
+	(1, 17),
+	(2, 13),
+	(2, 16),
+	(3, 11),
+	(3, 13) );
+
+DELIMITER ;
+
+DROP PROCEDURE IF EXISTS catched_to_list;
+
+DELIMITER //
+
+CREATE PROCEDURE catched_to_list ( 
+	IN in_id_player INT UNSIGNED,
+	IN in_id_pokenti INT UNSIGNED ) 
+BEGIN
+INSERT INTO players_pokenti(id_player, id_pokenti) VALUES (
+	in_id_player, 
+	in_id_pokenti);
+
+DELETE FROM catched  WHERE id_player=in_id_player 
+AND id_pokenti=in_id_pokenti LIMIT 1;
+
+END //
+
+DELIMITER ;
+
+DROP PROCEDURE IF EXISTS list_to_catched;
+
+DELIMITER //
+
+CREATE PROCEDURE list_to_catched (
+	IN in_id_player INT UNSIGNED,
+	IN in_id_pokenti INT UNSIGNED )
+BEGIN 
+INSERT INTO catched (id_player, id_pokenti) VALUES (
+	in_id_player,
+	in_id_pokenti);
+
+DELETE FROM players_pokenti WHERE id_player=in_id_player 
+AND id_pokenti=in_id_pokenti LIMIT 1;
+
+END //
+
+DELIMITER ;
+
+DROP PROCEDURE IF EXISTS heal;
+
+DELIMITER //
+
+CREATE PROCEDURE heal (
+	IN in_heal INT,
+	IN in_pokenti INT UNSIGNED,
+	IN in_player INT UNSIGNED )
+BEGIN 
+SELECT curr_hp INTO @curr_hp FROM current_stats WHERE id_pokenti=in_pokenti 
+INNER JOIN players_pokentis ON id_player=in_player 
+ORDER BY id_pokenti_player DESC LIMIT 1; 
+SET @heal:= @curr_hp + in_heal; 
+UPDATE current_stats SET curr_hp=@heal WHERE id_pokenti=in_pokenti;
+END //
+
+DELIMITER ;
 
 
 
-	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
